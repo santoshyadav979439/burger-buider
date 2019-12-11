@@ -1,0 +1,33 @@
+import React, {Component} from 'react';
+import classes from './Modal.module.css';
+import Auxilary from '../../../hoc/Auxilary/Auxilary';
+import Backdrop from '../Backdrop/Backdrop'
+class Modal extends Component{
+    shouldComponentUpdate(nextProps,nextState)
+    {
+        return this.props.show!==nextProps.show || this.props.children!==nextProps.children
+    }
+    componentWillUpdate()
+    {
+        console.log("[Modal.js] will update");
+    }
+    render()
+    {
+        return (
+            <Auxilary>
+            <Backdrop show ={this.props.show} clicked ={this.props.backDropClick}/>
+        <div className={classes.Modal}
+        style ={{
+            transform:this.props.show ? 'translateY(0)' : 'translateY(-100vh)',
+        opacity:this.props.show? '1':'0'
+    }}
+        >
+           {this.props.children} 
+        </div>
+        </Auxilary>
+        )
+    }
+  
+};
+
+export default Modal;
