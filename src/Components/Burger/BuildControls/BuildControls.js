@@ -18,6 +18,7 @@ const buildControl = (props) => {
                  added ={()=>props.addIngrediant(el.type)} 
                  deleted= {()=>props.deleteIngrediant(el.type)}
                  label={el.label}
+              
                  disabled ={props.disabled[el.type]}
                  />
              })}   
