@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
 import CheckoutSummary from '../../Components/Order/CheckoutSummary/CheckoutSummary';
-import queryString from 'query-string'
+//import queryString from 'query-string'
 import {Route} from 'react-router-dom'
 import ContactData from './ContactData/ContactData';
+import {connect} from 'react-redux'
 class Checkout extends Component {
-    state ={
-        ingredients:null,
-        price:0
-    }
+   
  checkoutChancelHandler = ()=>
  {
      console.log('inside new candfdel')
@@ -17,16 +15,6 @@ class Checkout extends Component {
  {
      this.props.history.replace('/checkout/contact-details');
  }
-
- componentWillMount =()=>
- {
-const recievedProps = queryString.parse(this.props.location.search);
-const {price,...recievedIngredients}= recievedProps;
-this.setState({
-        ingredients:recievedIngredients,
-        price:price
-     })
- }
     render() {
         
         return (
@@ -34,14 +22,20 @@ this.setState({
                 <CheckoutSummary
                 CheckoutContinued={this.checkoutContinuedHandler} 
                 CheckoutCancelled={this.checkoutChancelHandler}
-                 ingredients={this.state.ingredients}
-                 price={this.price}
+                 ingredients={this.props.ing}
+                 price={this.props.price}
                  />
     <Route path={this.props.match.path + '/contact-details'} 
-        render={()=><ContactData {...this.props} ingredients={this.state.ingredients}  totalPrice= {this.state.price}/> } /> 
+        component={ContactData } /> 
             </div>
         )
     }
 }
+const mapStateToProps =(state)=>
+{
+    return {
+        ing:state.ingredients
+    }
+}
 
-export default Checkout;
+export default connect(mapStateToProps)(Checkout);

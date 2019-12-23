@@ -1,13 +1,10 @@
-import * as actionType from './actionType';
+import * as actionType from '../actions/index';
 //import * as helperFunction from './helperFunctions'
 const initiatState={
-    ingredients:{
-        meat:0,
-        cheese:0,
-        salad:0,
-        bacon:0
-    },
-    totalPrice:4
+    ingredients:null,
+    totalPrice:0,
+    error:false
+    
 }
 // const fetchData =async()=>
 // {
@@ -39,7 +36,18 @@ const reducer =(state=initiatState,action) =>
              totalPrice :state.totalPrice-actionType.INGREDIENT_PRICE[action.ing_type]
                      }
               
-        
+        case actionType.INIT_INGREDIENT:
+            return{
+                ...state,
+                ingredients:action.ingredinets,
+                error:false
+
+            }
+            case actionType.ERROR:
+                return {
+                    ...state,
+                    error:true
+                }
        default:
            return state;
     }

@@ -7,7 +7,8 @@ import OrderSummary from '../../Components/Burger/OrderSummary/OrderSummary';
 import axios from '../../axios-orders';
 import Spinner from '../../Components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler'
-import {connect} from 'react-redux'
+import {connect} from 'react-redux';
+import * as actions from '../../store/actions/index'
 const INGREDIENT_PRICE={
     meat:50,
     cheese:40,
@@ -17,16 +18,14 @@ const INGREDIENT_PRICE={
 class BurgerBuilder extends Component {
 
     state ={
-        ingredients:null,
-        totalPrice:4,
         purchasable:false,
         purchasing:false,
         loading:false,
-        error:false
+      
     }
-//    componentDidMount=()=>{
-//     this.props.onComponentMountAction();
-//    }
+   componentDidMount=()=>{
+    this.props.onInitIngredient();
+   }
     addIngredientHandler= (type)=>
     {
         
@@ -70,18 +69,7 @@ class BurgerBuilder extends Component {
     
     purchaseContinueHnadler =  () =>
      {
-         const queryParam =[];
-         for(let i in this.state.ingredients)
-         {
-            queryParam.push(encodeURIComponent(i) + '=' + encodeURIComponent(this.state.ingredients[i]))
-         }
-         queryParam.push('price='+this.state.totalPrice)
-       const queryParamString=  queryParam.join('&');
-       
-         this.props.history.push({
-             pathname:'/checkout',
-             search:'?' +queryParamString
-         });
+    this.props.history.push('/checkout');
  
     }
     render(){
@@ -91,9 +79,8 @@ class BurgerBuilder extends Component {
         for (let key in disabledInfo)
         disabledInfo[key] = disabledInfo[key]<=0
         let orderSummary=null;
-        let burger=this.state.error?<p>Some error occured</p>:<Spinner />
-        console.log(this.props.ingredients + "this.state.ingrediants::::::::::::")
-        console.log('[total price]',this.props.totalPrice)
+        let burger=this.props.error?<p>Some error occured</p>:<Spinner />
+       
         if(this.props.ingredients){
             burger= (
            <Auxilary>
@@ -134,15 +121,17 @@ const mapStateToProp =(state) =>{
     
     return {
         ingredients:state.ingredients,
-        totalPrice:state.totalPrice
+        totalPrice:state.totalPrice,
+        error:state.error
 
     }
 }
 const mapDispatchToProp =(dispatch)=>
 {
     return {
-      onAddIngredientAction:(ing_type)=>{dispatch({type:'ADD_INGREDIENT',ing_type:ing_type})} ,
-      onRemoveIngredientAction:(ing_type)=>{dispatch({type:'DELETE_INGREDIENT',ing_type:ing_type})}
+      onAddIngredientAction:(ing_type)=>{dispatch(actions.addIngredeints(ing_type))} ,
+      onRemoveIngredientAction:(ing_type)=>{dispatch(actions.deleteIngredeints(ing_type))},
+      onInitIngredient:()=>dispatch(actions.initIngredient())
     }
 }
 

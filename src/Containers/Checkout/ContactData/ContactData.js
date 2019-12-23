@@ -3,15 +3,15 @@ import Button from '../../../Components/UI/Button/Button'
 import classes from './ContactData.module.css'
 import axios from './../../../axios-orders'
 import Spinner from '../../../Components/UI/Spinner/Spinner';
+import {connect} from 'react-redux'
 
 class ContactData extends Component {
     state={
        name:'',
         email:'',
-        address:{
-            street:'',
-            postal:''
-        },
+        street:'',
+        postal:'',
+        
         loading:false
     }
     orderHandler =(event)=>
@@ -23,21 +23,17 @@ class ContactData extends Component {
 
    
        const order ={
-           ingrediants:this.props.ingredients,
-           price:this.props.totalPrice,
+           ingrediants:this.props.ing,
+           price:this.props.price,
            customer:
            {
-               name:'santosh1 yadav',
-               address:{
-                   street: 'vibhav khand',
-                   postal:'223223'
-               },
-               email:'santosh.y2@tcs.com'
+               name:this.state.name,
+                 street: this.state.street,
+                postal:this.state.postal,
+                 email:this.state.email
            }
-          
-
-       }
-       console.log(order)
+             }
+    
       axios.post('/orders.json',order).then(response=>
        {
            this.setState(
@@ -58,14 +54,22 @@ class ContactData extends Component {
            )
        })
     }
+   onChnageHandler= (event)=>
+   {
+        this.setState(
+            {
+                [event.target.name]:event.target.value
+            }
+        )
+   }
     render()
     {
-        let form=(     <form >
+        let form=(<form >
                
-            <input type="text" className={classes.Input} name ='className={classes.Input} name' placeholder='enter your name'/>
-            <input type="email" className={classes.Input} name ='email' placeholder='enter your email'/>
-            <input type="text" className={classes.Input} name ='street' placeholder='enter your street'/>
-            <input type="text" className={classes.Input} name ='postal' placeholder='enter your postal'/>
+            <input type="text" className={classes.Input} name ='name' value ={this.state.name} onChange = {this.onChnageHandler} placeholder=' enter your name'/>
+            <input type="email" className={classes.Input} name ='email' value ={this.state.email}  onChange = {this.onChnageHandler} placeholder='enter your email'/>
+            <input type="text" className={classes.Input} name ='street' value ={this.state.street}  onChange = {this.onChnageHandler}  placeholder='enter your street'/>
+            <input type="text" className={classes.Input} name ='postal' value ={this.state.postal}  onChange = {this.onChnageHandler} placeholder='enter your postal'/>
             <Button className={classes.Input}  btnType="Success" clicked={this.orderHandler}>Order</Button>
         </form>)
         if(this.state.loading)
@@ -79,5 +83,12 @@ class ContactData extends Component {
         )
     }
 }
-export default ContactData;
+const mapStateToProps =(state)=>
+{
+    return {
+        ing:state.ingredients,
+        price:state.totalPrice
+    }
+}
+export default connect(mapStateToProps)(ContactData);
 
