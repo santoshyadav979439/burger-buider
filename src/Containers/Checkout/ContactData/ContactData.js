@@ -5,50 +5,100 @@ import axios from './../../../axios-orders'
 import Spinner from '../../../Components/UI/Spinner/Spinner';
 import {connect} from 'react-redux'
 import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
-import * as actions from '../../../store/actions/index'
+import * as actions from '../../../store/actions/index';
+import Input from '../../../Components/UI/Input/Input'
 class ContactData extends Component {
     state={
-       name:'',
-        email:'',
-        street:'',
-        postal:'',
+        orderForm:{
+            name:{
+                elementType:'input',
+                elementConfig:{
+                    type:'text',
+                    placeholder:'Enter your name'
+                },
+                value:''
+            },
+            street:{
+                elementType:'input',
+                elementConfig:{
+                    type:'text',
+                    placeholder:'Street'
+                },
+                value:''
+            },
+            email:{
+                elementType:'input',
+                elementConfig:{
+                    type:'text',
+                    placeholder:'Enter your email'
+                },
+                value:''
+            },
+           
+            zipCode:{
+                elementType:'input',
+                elementConfig:{
+                    type:'text',
+                    placeholder:'Zipcode'
+                },
+                value:''
+            },
+            deliveryMethod:{
+                elementType:'select',
+                elementConfig:{
+                    options:[
+                        {value:'fastest',displayValue:'fastest'},
+                        {value:'cheapest',displayValue:'cheapest'}
+                ]
+                },
+                value:''
+            }
+        }
+      
+       
         
       
     }
     orderHandler =(event)=>
     {
         event.preventDefault();
+        const formData={}
+        for(let elementName in this.state.orderForm){
+            formData[elementName] =this.state.orderForm[elementName].value;
+           }
             const order ={
            ingrediants:this.props.ing,
            price:this.props.price,
-           customer:
-           {
-               name:this.state.name,
-                 street: this.state.street,
-                postal:this.state.postal,
-                 email:this.state.email
-           }
+            customer:formData
              }
     this.props.placingOrder(order);
              
     }
-   onChnageHandler= (event)=>
+   onChnageHandler= (event,id)=>
    {
+    const updatedState={...this.state.orderForm};
+    const updatedInput={...this.state.orderForm[id]}
+    updatedInput.value = event.target.value
+       updatedState[id] = updatedInput
+    
         this.setState(
             {
-                [event.target.name]:event.target.value
+                orderForm:updatedState
             }
         )
    }
     render()
     {
-        let form=(<form >
-               
-            <input type="text" className={classes.Input} name ='name' value ={this.state.name} onChange = {this.onChnageHandler} placeholder=' enter your name'/>
-            <input type="email" className={classes.Input} name ='email' value ={this.state.email}  onChange = {this.onChnageHandler} placeholder='enter your email'/>
-            <input type="text" className={classes.Input} name ='street' value ={this.state.street}  onChange = {this.onChnageHandler}  placeholder='enter your street'/>
-            <input type="text" className={classes.Input} name ='postal' value ={this.state.postal}  onChange = {this.onChnageHandler} placeholder='enter your postal'/>
-            <Button className={classes.Input}  btnType="Success" clicked={this.orderHandler}>Order</Button>
+        let orderFormUpdated = {...this.state.orderForm};
+        const formData =  Object.keys(orderFormUpdated).map(key=>(
+        <Input key ={key} elementtype={orderFormUpdated[key].elementType} 
+       changed = {(event)=>this.onChnageHandler(event,key)}
+         elementConfig ={orderFormUpdated[key].elementConfig} 
+         value = {orderFormUpdated[key].value} />))
+           
+        let form=(<form onSubmit={this.orderHandler}>
+             {formData}
+            <Button className={classes.Input}  btnType="Success" >Order</Button>
         </form>)
         if(this.props.loading)
         form=<Spinner />
