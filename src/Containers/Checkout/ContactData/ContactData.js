@@ -4,7 +4,8 @@ import classes from './ContactData.module.css'
 import axios from './../../../axios-orders'
 import Spinner from '../../../Components/UI/Spinner/Spinner';
 import {connect} from 'react-redux'
-
+import withErrorHandler from '../../../hoc/withErrorHandler/withErrorHandler'
+import * as actions from '../../../store/actions/index'
 class ContactData extends Component {
     state={
        name:'',
@@ -12,17 +13,12 @@ class ContactData extends Component {
         street:'',
         postal:'',
         
-        loading:false
+      
     }
     orderHandler =(event)=>
     {
         event.preventDefault();
-            this.setState({
-           loading:true
-       })
-
-   
-       const order ={
+            const order ={
            ingrediants:this.props.ing,
            price:this.props.price,
            customer:
@@ -33,26 +29,8 @@ class ContactData extends Component {
                  email:this.state.email
            }
              }
-    
-      axios.post('/orders.json',order).then(response=>
-       {
-           this.setState(
-           {
-               loading:false,
-              
-           }
-          
-       )
-    this.props.history.push('/')
-    }
-       ).catch(err=>{console.log(err)
-           this.setState(
-               {
-                   loading:false,
-                   
-               }
-           )
-       })
+    this.props.placingOrder(order);
+             
     }
    onChnageHandler= (event)=>
    {
@@ -72,7 +50,7 @@ class ContactData extends Component {
             <input type="text" className={classes.Input} name ='postal' value ={this.state.postal}  onChange = {this.onChnageHandler} placeholder='enter your postal'/>
             <Button className={classes.Input}  btnType="Success" clicked={this.orderHandler}>Order</Button>
         </form>)
-        if(this.state.loading)
+        if(this.props.loading)
         form=<Spinner />
         return(
             <div className={classes.ContactData}>
@@ -86,9 +64,15 @@ class ContactData extends Component {
 const mapStateToProps =(state)=>
 {
     return {
-        ing:state.ingredients,
-        price:state.totalPrice
+        ing:state.burgerBuilder.ingredients,
+        price:state.burgerBuilder.totalPrice,
+        loading : state.order.loading
     }
 }
-export default connect(mapStateToProps)(ContactData);
+const mapDispatchToProps = dispatch =>{
+    return{
+        placingOrder: (orderData)=>dispatch(actions.placingOrder(orderData,axios))
+    }
+}
+export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler(ContactData,axios) );
 

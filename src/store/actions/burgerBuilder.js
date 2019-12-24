@@ -27,8 +27,7 @@ return {
 }
 export const initIngredient=()=>{
     return dispatch=>{
-        axios.get('/ingredients.json').
-        then(res=>{
+        axios.get('/ingredients.json').then(res=>{
            dispatch(setIngredient(res.data))
             
         }).catch(err=>{

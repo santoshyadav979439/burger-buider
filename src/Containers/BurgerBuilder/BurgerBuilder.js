@@ -47,7 +47,7 @@ class BurgerBuilder extends Component {
      updatePurchasable =()=>
     {
         const ingredients ={...this.props.ingredients}
-     console.log(ingredients +"totalItemsCounttotalItemsCount....")
+
       const totalItemsCount=  Object.keys(ingredients).map(item=>ingredients[item])
         .reduce((sum,count)=>sum+count,0);
         return totalItemsCount>0;
@@ -69,8 +69,9 @@ class BurgerBuilder extends Component {
     
     purchaseContinueHnadler =  () =>
      {
+    this.props.onInitPurchase()
     this.props.history.push('/checkout');
- 
+        
     }
     render(){
       const disabledInfo ={
@@ -120,9 +121,9 @@ class BurgerBuilder extends Component {
 const mapStateToProp =(state) =>{
     
     return {
-        ingredients:state.ingredients,
-        totalPrice:state.totalPrice,
-        error:state.error
+        ingredients:state.burgerBuilder.ingredients,
+        totalPrice:state.burgerBuilder.totalPrice,
+        error:state.burgerBuilder.error
 
     }
 }
@@ -131,7 +132,8 @@ const mapDispatchToProp =(dispatch)=>
     return {
       onAddIngredientAction:(ing_type)=>{dispatch(actions.addIngredeints(ing_type))} ,
       onRemoveIngredientAction:(ing_type)=>{dispatch(actions.deleteIngredeints(ing_type))},
-      onInitIngredient:()=>dispatch(actions.initIngredient())
+      onInitIngredient:()=>dispatch(actions.initIngredient()),
+      onInitPurchase:()=>dispatch(actions.initPurchase())
     }
 }
 

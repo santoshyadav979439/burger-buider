@@ -1,53 +1,43 @@
 import * as actionType from '../actions/index';
-//import * as helperFunction from './helperFunctions'
+import {updateObject} from '../utility'
 const initiatState={
     ingredients:null,
     totalPrice:0,
     error:false
     
 }
-// const fetchData =async()=>
-// {
-//   const response = await axios.get("https://react-my-burger-efe50.firebaseio.com/ingredients.json");
-//   return response;
-// }
+
 const reducer =(state=initiatState,action) =>
 {
 
     switch(action.type)
     {
         case actionType.ADD_INGREDIENT:
+         const oldIngredient=state.ingredients;
+         const updatedIngredient = {[action.ing_type]:  state.ingredients[action.ing_type] +1}
+         const updatedIngredients=updateObject(oldIngredient,updatedIngredient)
+        const updatedState ={ingredients:updatedIngredients,totalPrice :state.totalPrice+actionType.INGREDIENT_PRICE[action.ing_type]}
+        
+       return  updateObject(state,updatedState)
+    case actionType.DELETE_INGREDIENT:
          
-       return  {
-       ...state,
-       ingredients:{...state.ingredients,
-    [action.ing_type]:  state.ingredients[action.ing_type] +1
-    },
-    totalPrice :state.totalPrice+ actionType.INGREDIENT_PRICE[action.ing_type]
-            }
-
-            case actionType.DELETE_INGREDIENT:
-         
-                return  {
-                ...state,
-                ingredients:{...state.ingredients,
-             [action.ing_type]:  state.ingredients[action.ing_type] -1
-             },
-             totalPrice :state.totalPrice-actionType.INGREDIENT_PRICE[action.ing_type]
-                     }
-              
+        const oldIng=state.ingredients;
+        if(state.ingredients[action.ing_type] >0){    const updatedIng = {[action.ing_type]:  state.ingredients[action.ing_type] -1}
+        const updatedIngs=updateObject(oldIng,updatedIng)
+       const updatedSt ={ingredients:updatedIngs,totalPrice :state.totalPrice-actionType.INGREDIENT_PRICE[action.ing_type]}
+       return  updateObject(state,updatedSt)  
+    }
+    else 
+    return state
         case actionType.INIT_INGREDIENT:
-            return{
-                ...state,
-                ingredients:action.ingredinets,
-                error:false
-
-            }
+            const updatedStateInit={  ingredients:action.ingredinets,
+                error:false,
+                totalPrice:0}
+                const updatedObjectInit =updateObject(state,updatedStateInit)
+            return updatedObjectInit
             case actionType.ERROR:
-                return {
-                    ...state,
-                    error:true
-                }
+                const updatedStateEr= {error:true}
+                return updateObject(state,updatedStateEr)
        default:
            return state;
     }
