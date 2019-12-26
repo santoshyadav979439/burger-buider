@@ -16,6 +16,11 @@ class ContactData extends Component {
                     type:'text',
                     placeholder:'Enter your name'
                 },
+                validation:{
+                    required:true
+                },
+                valid:false,
+                touched:false,
                 value:''
             },
             street:{
@@ -24,6 +29,11 @@ class ContactData extends Component {
                     type:'text',
                     placeholder:'Street'
                 },
+                validation:{
+                    required:true
+                },
+                valid:false,
+                touched:false,
                 value:''
             },
             email:{
@@ -32,6 +42,11 @@ class ContactData extends Component {
                     type:'text',
                     placeholder:'Enter your email'
                 },
+                validation:{
+                    required:true
+                },
+                valid:false,
+                touched:false,
                 value:''
             },
            
@@ -41,6 +56,13 @@ class ContactData extends Component {
                     type:'text',
                     placeholder:'Zipcode'
                 },
+                validation:{
+                    required:true,
+                    minLength:5,
+                    maxLength: 5
+                },
+                valid:false,
+                touched:false,
                 value:''
             },
             deliveryMethod:{
@@ -51,14 +73,12 @@ class ContactData extends Component {
                         {value:'cheapest',displayValue:'cheapest'}
                 ]
                 },
-                value:''
+                value:'',
+                valid:true
             }
-        }
-      
-       
-        
-      
-    }
+        },
+        formValid:false
+}
     orderHandler =(event)=>
     {
         event.preventDefault();
@@ -72,18 +92,41 @@ class ContactData extends Component {
             customer:formData
              }
     this.props.placingOrder(order);
-             
+}
+    checkValidity =(value,rule)=>{
+        let isValid =true;
+        if(rule.required)
+        isValid = value.trim() !=='' && isValid
+       
+        if(rule.minLength)
+        {
+            isValid = value.trim().length >= rule.minLength && isValid
+        }
+        if(rule.maxLength)
+        {
+            isValid = value.trim().length <= rule.maxLength && isValid
+        }
+        return isValid;
     }
+
    onChnageHandler= (event,id)=>
    {
     const updatedState={...this.state.orderForm};
     const updatedInput={...this.state.orderForm[id]}
-    updatedInput.value = event.target.value
-       updatedState[id] = updatedInput
-    
+    updatedInput.value = event.target.value;
+    if(updatedInput.validation)
+    updatedInput.valid = this.checkValidity(updatedInput.value,updatedInput.validation);
+    updatedInput.touched =true;
+    updatedState[id] = updatedInput
+    let  isFormValid = true
+    for(let formElement in updatedState){
+        isFormValid = updatedState[formElement].valid && isFormValid
+    }
+    console.log(isFormValid)
         this.setState(
             {
-                orderForm:updatedState
+                orderForm:updatedState,
+                formValid:isFormValid
             }
         )
    }
@@ -94,11 +137,15 @@ class ContactData extends Component {
         <Input key ={key} elementtype={orderFormUpdated[key].elementType} 
        changed = {(event)=>this.onChnageHandler(event,key)}
          elementConfig ={orderFormUpdated[key].elementConfig} 
+         invalid ={ !orderFormUpdated[key].valid }
+         shouldValidate={orderFormUpdated[key].validation}
+         touched = {orderFormUpdated[key].touched}
+         valueType ={key}
          value = {orderFormUpdated[key].value} />))
            
         let form=(<form onSubmit={this.orderHandler}>
              {formData}
-            <Button className={classes.Input}  btnType="Success" >Order</Button>
+            <Button disabled={!this.state.formValid} className={classes.Input}  btnType="Success" >Order</Button>
         </form>)
         if(this.props.loading)
         form=<Spinner />
