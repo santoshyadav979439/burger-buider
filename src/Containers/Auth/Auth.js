@@ -3,8 +3,7 @@ import Input from '../../Components/UI/Input/Input';
 import Button from '../../Components/UI/Button/Button';
 import classes from './Auth.module.css';
 import * as actions from '../../store/actions/index';
-import {connect} from 'react-redux'
-class Auth extends Component {
+import {connect} from 'react-redux';class Auth extends Component {
     state ={
         controls:{
             email:{
@@ -36,7 +35,8 @@ class Auth extends Component {
                 touched:false,
                 value:''
             },
-        }
+        },
+        isSignUp:true
     }
     checkValidity =(value,rule)=>{
         let isValid =true;
@@ -81,7 +81,14 @@ class Auth extends Component {
     onSubmitHandler =(event)=>
     {
         event.preventDefault();
-        this.props.onAuth(this.state.controls.email.value,this.state.controls.password.value)
+        this.props.onAuth(this.state.controls.email.value,this.state.controls.password.value,this.state.isSignUp)
+    }
+    switchAuthModeHandler = ()=>{
+        this.setState(prevState=>{
+            return {
+                isSignUp:!prevState.isSignUp
+            }
+        })
     }
     render() {
         let authFormUpdated = {...this.state.controls};
@@ -98,15 +105,16 @@ class Auth extends Component {
             <div className={classes.Auth}>
                 <form onSubmit={this.onSubmitHandler}>
                     {form}
-                    <Button btnType='Success'>Signup</Button>
-                </form>
+                    <Button btnType='Success'>{this.state.isSignUp?'SIGNUP':'SIGNIN'}</Button>
+        </form>
+    <Button btnType='Danger' clicked ={this.switchAuthModeHandler}>Switch to {this.state.isSignUp?"SignIn":"SignUp"}</Button>
             </div>
         );
     }
 }
 const mapDispatchToProps=dispatch=>{
     return{
-        onAuth:(email,password)=>dispatch(actions.auth())
+        onAuth:(email,password,isSignUP)=>dispatch(actions.auth(email,password,isSignUP))
     }
 }
 export default connect(null,mapDispatchToProps)(Auth);
