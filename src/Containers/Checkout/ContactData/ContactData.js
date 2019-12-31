@@ -122,7 +122,7 @@ class ContactData extends Component {
     for(let formElement in updatedState){
         isFormValid = updatedState[formElement].valid && isFormValid
     }
-    console.log(isFormValid)
+   
         this.setState(
             {
                 orderForm:updatedState,
