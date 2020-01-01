@@ -15,6 +15,8 @@ export {
     initIngredient} from './burgerBuilder';
     export *  from './order'
 export {
-    auth
+    auth,
+    authRedirectAction,
+    authCheckState
 }
 from './auth'

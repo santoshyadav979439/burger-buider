@@ -19,10 +19,10 @@ export const purchaseBurgerStart =()=>{
         type:actionType.PURCHASE_BURGER_START
     }
 }
-export const placingOrder = (orderData,axios) =>{
+export const placingOrder = (orderData,token) =>{
     return dispatch =>{
         dispatch(purchaseBurgerStart())
-        axios.post('/orders.json',orderData).then(response=>
+        axios.post('/orders.json?auth='+token,orderData).then(response=>
             {
                 console.log('[orders action generator]',response.data)
             dispatch(orderSuccess(response.data.name))
@@ -55,11 +55,11 @@ const fetchOrderStart = () =>{
         type:actionType.FETCH_ORDER_START
     }
 }
-export const fetchOrders =()=>{
+export const fetchOrders =(token)=>{
    
     return dispatch=>{
         dispatch(fetchOrderStart()) ;
-        axios.get('/orders.json').then(response=>{
+        axios.get('/orders.json?auth='+token).then(response=>{
           
             const ordersArray=[]
             for(let key in response.data)

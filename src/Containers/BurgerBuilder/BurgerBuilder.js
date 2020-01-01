@@ -54,9 +54,17 @@ class BurgerBuilder extends Component {
     }
     purchaseHandler =()=>
     {
-        this.setState({
-            purchasing:true
-        })
+        if(this.props.isAuthenticated){
+            this.setState({
+                purchasing:true
+            })
+        }
+        else{
+            this.props.history.push('/auth');
+        this.props.onSetAuthRedirectPath('/Checkout')
+        }
+        
+      
     }
     orderCanceledHandler =()=>
     {
@@ -89,11 +97,11 @@ class BurgerBuilder extends Component {
                <BuildControls
                 disabled={disabledInfo} 
                 addIngrediant={this.props.onAddIngredientAction}
-              
-                 deleteIngrediant={this.props.onRemoveIngredientAction} 
+                deleteIngrediant={this.props.onRemoveIngredientAction} 
                  price={this.props.totalPrice}
                  purchasable={this.updatePurchasable(this.props.ingredients)}
                  purchasing ={this.purchaseHandler}
+                 isAuth ={this.props.isAuthenticated}
                  />
            </Auxilary>
         
@@ -123,7 +131,9 @@ const mapStateToProp =(state) =>{
     return {
         ingredients:state.burgerBuilder.ingredients,
         totalPrice:state.burgerBuilder.totalPrice,
-        error:state.burgerBuilder.error
+        error:state.burgerBuilder.error,
+        isAuthenticated:state.auth.token,
+        path:state.burgerBuilder.building
 
     }
 }
@@ -133,7 +143,8 @@ const mapDispatchToProp =(dispatch)=>
       onAddIngredientAction:(ing_type)=>{dispatch(actions.addIngredeints(ing_type))} ,
       onRemoveIngredientAction:(ing_type)=>{dispatch(actions.deleteIngredeints(ing_type))},
       onInitIngredient:()=>dispatch(actions.initIngredient()),
-      onInitPurchase:()=>dispatch(actions.initPurchase())
+      onInitPurchase:()=>dispatch(actions.initPurchase()),
+      onSetAuthRedirectPath:(path)=>dispatch(actions.authRedirectAction(path))
     }
 }
 

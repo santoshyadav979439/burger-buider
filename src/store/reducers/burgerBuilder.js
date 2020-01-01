@@ -3,7 +3,8 @@ import {updateObject} from '../utility'
 const initiatState={
     ingredients:null,
     totalPrice:0,
-    error:false
+    error:false,
+    building:false
     
 }
 
@@ -16,7 +17,11 @@ const reducer =(state=initiatState,action) =>
          const oldIngredient=state.ingredients;
          const updatedIngredient = {[action.ing_type]:  state.ingredients[action.ing_type] +1}
          const updatedIngredients=updateObject(oldIngredient,updatedIngredient)
-        const updatedState ={ingredients:updatedIngredients,totalPrice :state.totalPrice+actionType.INGREDIENT_PRICE[action.ing_type]}
+        const updatedState ={
+            ingredients:updatedIngredients,
+            totalPrice :state.totalPrice+actionType.INGREDIENT_PRICE[action.ing_type],
+            building:true
+        }
         
        return  updateObject(state,updatedState)
     case actionType.DELETE_INGREDIENT:
@@ -24,7 +29,11 @@ const reducer =(state=initiatState,action) =>
         const oldIng=state.ingredients;
         if(state.ingredients[action.ing_type] >0){    const updatedIng = {[action.ing_type]:  state.ingredients[action.ing_type] -1}
         const updatedIngs=updateObject(oldIng,updatedIng)
-       const updatedSt ={ingredients:updatedIngs,totalPrice :state.totalPrice-actionType.INGREDIENT_PRICE[action.ing_type]}
+       const updatedSt ={
+           ingredients:updatedIngs,
+           totalPrice :state.totalPrice-actionType.INGREDIENT_PRICE[action.ing_type],
+           building:true
+        }
        return  updateObject(state,updatedSt)  
     }
     else 
@@ -32,7 +41,9 @@ const reducer =(state=initiatState,action) =>
         case actionType.INIT_INGREDIENT:
             const updatedStateInit={  ingredients:action.ingredinets,
                 error:false,
-                totalPrice:0}
+                totalPrice:0,
+                building:false
+            }
                 const updatedObjectInit =updateObject(state,updatedStateInit)
             return updatedObjectInit
             case actionType.ERROR:

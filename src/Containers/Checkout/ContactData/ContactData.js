@@ -91,7 +91,7 @@ class ContactData extends Component {
            price:this.props.price,
             customer:formData
              }
-    this.props.placingOrder(order);
+    this.props.placingOrder(order,this.props.token);
 }
     checkValidity =(value,rule)=>{
         let isValid =true;
@@ -163,12 +163,13 @@ const mapStateToProps =(state)=>
     return {
         ing:state.burgerBuilder.ingredients,
         price:state.burgerBuilder.totalPrice,
-        loading : state.order.loading
+        loading : state.order.loading,
+        token:state.auth.token
     }
 }
 const mapDispatchToProps = dispatch =>{
     return{
-        placingOrder: (orderData)=>dispatch(actions.placingOrder(orderData,axios))
+        placingOrder: (orderData,token)=>dispatch(actions.placingOrder(orderData,token))
     }
 }
 export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler(ContactData,axios) );

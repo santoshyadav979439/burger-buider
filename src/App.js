@@ -5,7 +5,13 @@ import Checkout from './Containers/Checkout/Checkout'
 import {Route,Switch} from 'react-router-dom'
 import Orders from './Containers/Orders/Orders'
 import Auth from './Containers/Auth/Auth'
+import Logout from './Containers/Auth/Logout/Logout'
+import * as actions from './store/actions/index';
+import {connect} from 'react-redux'
 class App extends Component {
+  componentDidMount (){
+    this.props.onTryAutoSignIn()
+  }
 render(){
   return (
  
@@ -14,9 +20,9 @@ render(){
       <Route path ='/checkout' component={Checkout} />
       <Route path ='/orders' component = {Orders} />
       <Route path = '/auth' component ={Auth} />
+      <Route path ='/logout'  component={Logout} />  
       <Route path ='/' component={BurgerBuilder} />
-      
-      </Switch>
+</Switch>
    
     </Layout>
 
@@ -24,5 +30,9 @@ render(){
   );
 }
 }
-
-export default App;
+const mapDispatchToProp =(dispatch)=>{
+  return{
+    onTryAutoSignIn :()=>dispatch(actions.authCheckState())
+  }
+}
+export default connect(null,mapDispatchToProp)(App);
