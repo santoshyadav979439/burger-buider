@@ -2,52 +2,44 @@ import React ,{Component} from 'react'
 import Modal from '../../Components/UI/Modal/Modal';
 import Auxilary from '../Auxilary/Auxilary'
 //import axios from '../../axios-orders'
-const WithErrorHandler =(WrappedComponent,axios)=>
-{
+const withErrorHandler = ( WrappedComponent, axios ) => {
     return class extends Component {
-        state={
-            error:null
+        state = {
+            error: null
         }
-        componentWillMount(){
-            axios.interceptors.request.use(request=>
-                {
-                    this.setState(
-                        {
-                            error:null
-                        }
-                    )
-                    return request;
-                })
-            axios.interceptors.response.use(null,error=>{
-                this.setState(
-                    {
-                        error:error
-                    }
-                )
-            })
+
+        componentWillMount () {
+            this.reqInterceptor = axios.interceptors.request.use( req => {
+                this.setState( { error: null } );
+                return req;
+            } );
+            this.resInterceptor = axios.interceptors.response.use( res => res, error => {
+                this.setState( { error: error } );
+            } );
         }
-        clickHandler=()=>
-        {
-            this.setState(
-                {
-                    error:null
-                }
-            )
+
+        componentWillUnmount () {
+            axios.interceptors.request.eject( this.reqInterceptor );
+            axios.interceptors.response.eject( this.resInterceptor );
         }
-        render(){
-            console.log(this.state.error)
-            return(
+
+        errorConfirmedHandler = () => {
+            this.setState( { error: null } );
+        }
+
+        render () {
+            return (
                 <Auxilary>
-        <Modal 
-        show={this.state.error}
-        backDropClick={this.clickHandler}
-        >{this.state.error ? this.state.error.message:null}</Modal>
-                <WrappedComponent {...this.props} />
+                    <Modal
+                        show={this.state.error}
+                        modalClosed={this.errorConfirmedHandler}>
+                        {this.state.error ? this.state.error.message : null}
+                    </Modal>
+                    <WrappedComponent {...this.props} />
                 </Auxilary>
-            )
+            );
         }
-   
     }
 }
 
-export default WithErrorHandler;
+export default withErrorHandler;

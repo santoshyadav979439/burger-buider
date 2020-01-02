@@ -5,6 +5,7 @@ import classes from './Auth.module.css';
 import * as actions from '../../store/actions/index';
 import Spinner from '../../Components/UI/Spinner/Spinner'
 import {Redirect} from 'react-router-dom'
+import {updateObject,checkValidity} from '../../shared/utility'
 import {connect} from 'react-redux';class Auth extends Component {
     state ={
         controls:{
@@ -40,39 +41,28 @@ import {connect} from 'react-redux';class Auth extends Component {
         },
         isSignUp:true
     }
-    checkValidity =(value,rule)=>{
-        let isValid =true;
-        if(rule.required)
-        isValid = value.trim() !=='' && isValid
-       
-        if(rule.minLength)
-        {
-            isValid = value.trim().length >= rule.minLength && isValid
-        }
-        if(rule.maxLength)
-        {
-            isValid = value.trim().length <= rule.maxLength && isValid
-        }
-        if(rule.isEmail){
-           const pattern =/^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/;
-           isValid = pattern.test(value) && isValid
-        }
-        return isValid;
-    }
+    
     onChnageHandler= (event,id)=>
     {
-     const updatedState={...this.state.controls};
-     const updatedInput={...this.state.controls[id]}
-     updatedInput.value = event.target.value;
-     if(updatedInput.validation)
-     updatedInput.valid = this.checkValidity(updatedInput.value,updatedInput.validation);
-     updatedInput.touched =true;
-     updatedState[id] = updatedInput
+
+     //const updatedInput={...this.state.controls[id]}
+     const updatedInput = updateObject(this.state.controls[id],{
+      value:  event.target.value,
+      valid : checkValidity(this.state.controls[id].value,this.state.controls[id].validation),
+      touched:true
+     })
+    //  updatedInput.value = event.target.value;
+    //  if(updatedInput.validation)
+    //  updatedInput.valid = this.checkValidity(updatedInput.value,updatedInput.validation);
+    //  updatedInput.touched =true;
+    
+     const updatedState =updateObject(this.state.controls,{
+         [id]: updatedInput
+     })
      let  isFormValid = true
      for(let formElement in updatedState){
          isFormValid = updatedState[formElement].valid && isFormValid
      }
-    
          this.setState(
              {
                 controls:updatedState,
@@ -114,9 +104,14 @@ import {connect} from 'react-redux';class Auth extends Component {
                  value = {authFormUpdated[key].value} />))
                  if(this.props.loading)     
                  form =<Spinner />
+                 let redirect =null;
+                 if(this.props.isAuthenticated)
+                 {
+                    redirect=<Redirect to = {this.props.authRedirectPath} />
+                 }
         return (
             <div className={classes.Auth}>
-                {this.props.isAuthenticated?<Redirect to = {this.props.authRedirectPath} />:null}
+             {redirect}
              <p>{errorMessage}</p>
                 <form onSubmit={this.onSubmitHandler}>
                     {form}
