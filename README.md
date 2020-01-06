@@ -1,8 +1,12 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## deployed application link
+https://react-my-burger-efe50.firebaseapp.com/
+you can directly checkout application by opening this link. You don't need to install anything
 
 ## Available Scripts
 
 In the project directory, you can run:
+### `npm install`
+use this command to install all the libraries required in project
 
 ### `yarn start`
 
